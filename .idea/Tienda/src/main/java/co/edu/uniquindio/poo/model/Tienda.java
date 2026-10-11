@@ -202,26 +202,123 @@ public class Tienda {
     }
 
     //punto 5:   Obtener las facturas donde se haya comprado un celular de marca Iphone 16 pro max
+    public ArrayList<Factura> obtenerFacturasIphone16ProMax() {
+        ArrayList<Factura> facturasEncontradas = new ArrayList<>();
+        for (Factura factura : listaFacturas) {
+            for (DetalleFactura detalle : factura.getListaDetallesFactura()) {
+                Producto producto = detalle.getProducto();
+                if (producto != null && producto.getNombre().equalsIgnoreCase("Iphone 16 pro max")) {
+                    facturasEncontradas.add(factura);
+                    break; // Salimos del bucle interno para no duplicar la misma factura si tiene varios detalles iguales
+                }
+            }
+        }
+        return facturasEncontradas;
+    }
 
     //punto 6:   Obtener las facturas que tenga un cliente
     // donde su nombre sea juan y haya comprado un celular de marca Iphone 16 pro max
+    public Arraylist<Factura> obtenerClienteJuanIphome(){
+        Arraylist<Factura> facturasEncontradas = new ArrayList<>();
+        for (Factura factura : listaFacturas) {
+            Cliente cliente = factura.getCliente();
+            if (cliente != null && cliente.getNombreCompleto().equalsIgnoreCase("Juan")) {
+                boolean tieneIphone = false;
+                for (DetalleFactura detalle : factura.getListaDetallesFactura()) {
+                    Producto producto = detalle.getProducto();
+                    if (producto != null && producto.getNombre().equalsIgnoreCase("Iphone 16 pro max")) {
+                        tieneIphone = true;
+                        break;
+                    }
+                }
+                if (tieneIphone) {
+                    facturasEncontradas.add(factura);
+                }
+            }
+        }
+
+        return facturasEncontradas;
+    }
 
 
     // Punto 7: Implementar un método que reciba una categoría
     //  y retorne todos los productos registrados que pertenezcan a ella.
+    public ArrayList<Producto> obtenerProductosPorCategoria(Categoria categoriaBuscada) {
+        ArrayList<Producto> productosFiltrados = new ArrayList<>();
+
+        for (Producto producto : listaProductos) {
+            if (producto.getCategoria() == categoriaBuscada) {
+                productosFiltrados.add(producto);
+            }
+        }
+        return productosFiltrados;
+    }
 
     //punto 8 : Implementar un método que reciba un precio mínimo y un precio máximo, y retorne
     // los productos cuyo precio se encuentre dentro de ese rango, incluyendo ambos límites.
 
-    //punto 9: Implementar un método que retorne todos los productos
-    // registrados en la tienda, ordenados de menor a mayor según su precio.
+    public ArrayList<Producto> obtenerProductosRangoPrecio(float precioMin, float precioMax) {
+        ArrayList<Producto> productosOrganizados= new ArrayList<>();
+        for (Producto producto : listaProductos) {
+            if (producto.getPrecio() >= precioMin && producto.getPrecio() <= precioMax) {
+                productosOrganizados.add(producto);
+            }
+        }
+        return productosFiltrados;
+    }
+    //punto 9: Implementar un método que retorne los productos registrados en la tienda, ordenados de menor a mayor según su precio.
+
+    //Para este punto, me apoyé en IA, pues no estaba segura de cómo comparar los precios
+    // usando el hashmap de la lista de los productos
+
+    public ArrayList<Producto> obtenerProductosOrdenadosPorPrecio() {
+        ArrayList<Producto> listaTemporal = new ArrayList<>(hashMaplistaProductos.values());
+
+        int n = listaTemporal.size();
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+
+                float precioActual = listaTemporal.get(j).getPrecio();
+                float precioSiguiente = listaTemporal.get(j + 1).getPrecio();
+
+                if (precioActual > precioSiguiente) {
+                    Producto temporal = listaTemporal.get(j);
+                    listaTemporal.set(j, listaTemporal.get(j + 1));
+                    listaTemporal.set(j + 1, temporal);
+                }
+            }
+        }
+        return listaTemporal;
+    }
 
     //punto 10: Implementar un método que identifique el producto con el precio más alto de la tienda.
     // Si no existen productos registrados, el método debe retornar un Optional vacío.
+    public Optional<Producto> obtenerProductoPrecioMasAlto() {
+        if (listaProductos == null || listaProductos.isEmpty()) {
+            return Optional.empty();
+        }
+        Producto productoMasAlto = listaProductos.get(0);
+        for (Producto producto : listaProductos) {
+            if (producto.getPrecio() > productoMasAlto.getPrecio()) {
+                productoMasAlto = producto;
+            }
+        }
+        return Optional.of(productoMasAlto);
+    }
 
     //Punto 11: Implementar un método que reciba el nombre de una ciudad y retorne
     // todos los clientes que residan en ella.
     // La búsqueda debe realizarse sin diferenciar entre mayúsculas y minúsculas.
+    public ArrayList<Cliente> obtenerClientesPorCiudad(String ciudad) {
+        ArrayList<Cliente> clientesCiudad = new ArrayList<>();
+
+        for (Cliente cliente : listaClientes) {
+            if (cliente.getCiudadResidencia() != null && cliente.getCiudadResidencia().equalsIgnoreCase(ciudad)) {
+                clientesCiudad.add(cliente);
+            }
+        }
+        return clientesCiudad;
+    }
 
 
 
