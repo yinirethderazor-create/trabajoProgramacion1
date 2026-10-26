@@ -33,5 +33,3 @@ public class Cliente {
         this.apellido = apellido;
     }
 }
-
-

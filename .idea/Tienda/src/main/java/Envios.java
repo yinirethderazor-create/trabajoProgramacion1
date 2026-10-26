@@ -1,5 +1,5 @@
 public class Envios {
-    private final int codigo;
+    private int codigo;
     private String destinatario;
     private double peso;
 
@@ -11,6 +11,10 @@ public class Envios {
 
     public int getCodigo() {
         return codigo;
+    }
+
+    public void setCodigo(int codigo) {
+        this.codigo = codigo;
     }
 
     public String getDestinatario() {
@@ -28,4 +32,7 @@ public class Envios {
     public void setPeso(double peso) {
         this.peso = peso;
     }
+
+    public double calcularCostoFijo(){
+        return valorFijo + peso * incremento;
 }

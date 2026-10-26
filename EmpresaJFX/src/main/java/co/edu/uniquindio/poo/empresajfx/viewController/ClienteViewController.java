@@ -181,6 +181,7 @@ public class ClienteViewController {
 
     public void setApp(App app) {
         this.app = app;
-
     }
 }
+
+

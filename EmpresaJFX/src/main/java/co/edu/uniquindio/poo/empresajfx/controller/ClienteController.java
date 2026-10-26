@@ -28,4 +28,3 @@ public class ClienteController {
         return empresa.actualizarCliente(cedula, cliente);
     }
 }
-

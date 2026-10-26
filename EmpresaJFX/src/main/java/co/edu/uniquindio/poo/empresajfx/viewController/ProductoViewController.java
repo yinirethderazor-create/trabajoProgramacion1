@@ -1,11 +1,9 @@
 package co.edu.uniquindio.poo.empresajfx.viewController;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import co.edu.uniquindio.poo.empresajfx.App;
 import co.edu.uniquindio.poo.empresajfx.controller.ProductoController;
 import co.edu.uniquindio.poo.empresajfx.model.Producto;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,50 +15,24 @@ import javafx.scene.control.TextField;
 
 public class ProductoViewController {
 
-    ProductoController productoController;
-    ObservableList<Producto> listProductos = FXCollections.observableArrayList();
-    Producto selectedProducto;
-
-    @FXML
-    private ResourceBundle resources;
-
-    @FXML
-    private URL location;
-
-    @FXML
-    private TextField txtCodigo;
-
-    @FXML
-    private TextField txtNombre;
-
-    @FXML
-    private TextField txtCategoria;
-
-    @FXML
-    private Button btnLimpiar;
-
-    @FXML
-    private Button btnEliminar;
-
-    @FXML
-    private Button btnActualizarProducto;
-
-    @FXML
-    private Button btnAgregarProducto;
-
-    @FXML
-    private TableView<Producto> tblListProducto;
-
-    @FXML
-    private TableColumn<Producto, String> tbcCodigo;
-
-    @FXML
-    private TableColumn<Producto, String> tbcNombre;
-
-    @FXML
-    private TableColumn<Producto, String> tbcCategoria;
-
+    private ProductoController productoController;
+    private ObservableList<Producto> listProductos = FXCollections.observableArrayList();
+    private Producto selectedProducto;
     private App app;
+
+    @FXML private TextField txtCodigo;
+    @FXML private TextField txtNombre;
+    @FXML private TextField txtPrecio;
+
+    @FXML private TableView<Producto> tblListProducto;
+    @FXML private TableColumn<Producto, String> tbcCodigo;
+    @FXML private TableColumn<Producto, String> tbcNombre;
+    @FXML private TableColumn<Producto, Double> tbcPrecio;
+
+    @FXML private Button btnAgregarProducto;
+    @FXML private Button btnActualizarProducto;
+    @FXML private Button btnLimpiar;
+    @FXML private Button btnEliminar;
 
     @FXML
     void onAgregarProducto() {
@@ -82,33 +54,24 @@ public class ProductoViewController {
         eliminarProducto();
     }
 
-    @FXML
-    void initialize() {
-        productoController = new ProductoController(App.empresa);
+    public void setApp(App app) {
+        this.app = app;
+        this.productoController = new ProductoController(App.empresa);
         initView();
     }
 
     private void initView() {
-        // Traer los datos del producto a la tabla
         initDataBinding();
-
-        // Obtiene la lista
         obtenerProductos();
-
-        // Limpiar la tabla
         tblListProducto.getItems().clear();
-
-        // Agregar los elementos a la tabla
         tblListProducto.setItems(listProductos);
-
-        // Seleccionar elemento de la tabla
         listenerSelection();
     }
 
     private void initDataBinding() {
         tbcCodigo.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCodigo()));
         tbcNombre.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNombre()));
-        tbcCategoria.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCategoria()));
+        tbcPrecio.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getPrecio()));
     }
 
     private void obtenerProductos() {
@@ -126,25 +89,29 @@ public class ProductoViewController {
         if (producto != null) {
             txtCodigo.setText(producto.getCodigo());
             txtNombre.setText(producto.getNombre());
-            txtCategoria.setText(producto.getCategoria());
+            txtPrecio.setText(String.valueOf(producto.getPrecio()));
         }
     }
 
     private void agregarProducto() {
         Producto producto = buildProducto();
-        if (productoController.crearProducto(producto)) {
+        if (producto != null && productoController.crearProducto(producto)) {
             listProductos.add(producto);
             limpiarCamposProducto();
         }
     }
 
     private Producto buildProducto() {
-        Producto producto = new Producto(txtCodigo.getText(), txtNombre.getText(), txtCategoria.getText());
-        return producto;
+        try {
+            double precio = Double.parseDouble(txtPrecio.getText());
+            return new Producto(txtCodigo.getText(), txtNombre.getText(), precio);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     private void eliminarProducto() {
-        if (productoController.eliminarProducto(txtCodigo.getText())) {
+        if (selectedProducto != null && productoController.eliminarProducto(txtCodigo.getText())) {
             listProductos.remove(selectedProducto);
             limpiarCamposProducto();
             limpiarSeleccion();
@@ -152,18 +119,17 @@ public class ProductoViewController {
     }
 
     private void actualizarProducto() {
-
-        if (selectedProducto != null &&
-                productoController.actualizarProducto(selectedProducto.getCodigo(), buildProducto())) {
-
-            int index = listProductos.indexOf(selectedProducto);
-            if (index >= 0) {
-                listProductos.set(index, buildProducto());
+        if (selectedProducto != null) {
+            Producto actualizado = buildProducto();
+            if (actualizado != null && productoController.actualizarProducto(selectedProducto.getCodigo(), actualizado)) {
+                int index = listProductos.indexOf(selectedProducto);
+                if (index >= 0) {
+                    listProductos.set(index, actualizado);
+                }
+                tblListProducto.refresh();
+                limpiarSeleccion();
+                limpiarCamposProducto();
             }
-
-            tblListProducto.refresh();
-            limpiarSeleccion();
-            limpiarCamposProducto();
         }
     }
 
@@ -175,10 +141,6 @@ public class ProductoViewController {
     private void limpiarCamposProducto() {
         txtCodigo.clear();
         txtNombre.clear();
-        txtCategoria.clear();
-    }
-
-    public void setApp(App app) {
-        this.app = app;
+        txtPrecio.clear();
     }
 }

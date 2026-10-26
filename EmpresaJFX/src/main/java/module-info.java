@@ -8,3 +8,4 @@ module co.edu.uniquindio.poo.empresajfx {
     opens co.edu.uniquindio.poo.empresajfx.viewController to javafx.fxml;
 
 }
+

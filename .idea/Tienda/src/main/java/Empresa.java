@@ -1,4 +1,4 @@
-package co.edu.uniquindio.poo.empresajfx.model;
+import package co.edu.uniquindio.poo.empresajfx.model;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -6,10 +6,12 @@ import java.util.LinkedList;
 public class Empresa {
     private String nombre;
     private Collection<Cliente> clientes;
+    private Collection<Producto> productos;
 
     public Empresa(String nombre) {
         this.nombre = nombre;
         clientes = new LinkedList<>();
+        productos = new LinkedList<>();
     }
 
     public String getNombre() {
@@ -28,6 +30,15 @@ public class Empresa {
         this.clientes = clientes;
     }
 
+    public Collection<Producto> getProductos() {
+        return productos;
+    }
+
+    public void setProductos(Collection<Producto> productos) {
+        this.productos = productos;
+    }
+
+    // --- CRUD de Clientes ---
     public boolean agregarCliente(Cliente cliente) {
         boolean centinela = false;
         if (!verificarCliente(cliente.getCedula())) {
@@ -68,9 +79,56 @@ public class Empresa {
         for (Cliente cliente : clientes) {
             if (cliente.getCedula().equals(cedula)) {
                 centinela = true;
+                break;
+            }
+        }
+        return centinela;
+    }
+
+    // --- CRUD de Productos ---
+    public boolean agregarProducto(Producto producto) {
+        boolean centinela = false;
+        if (!verificarProducto(producto.getCodigo())) {
+            productos.add(producto);
+            centinela = true;
+        }
+        return centinela;
+    }
+
+    public boolean eliminarProducto(String codigo) {
+        boolean centinela = false;
+        for (Producto producto : productos) {
+            if (producto.getCodigo().equals(codigo)) {
+                productos.remove(producto);
+                centinela = true;
+                break;
+            }
+        }
+        return centinela;
+    }
+
+    public boolean actualizarProducto(String codigo, Producto actualizado) {
+        boolean centinela = false;
+        for (Producto producto : productos) {
+            if (producto.getCodigo().equals(codigo)) {
+                producto.setCodigo(actualizado.getCodigo());
+                producto.setNombre(actualizado.getNombre());
+                producto.setPrecio(actualizado.getPrecio());
+                centinela = true;
+                break;
+            }
+        }
+        return centinela;
+    }
+
+    public boolean verificarProducto(String codigo) {
+        boolean centinela = false;
+        for (Producto producto : productos) {
+            if (producto.getCodigo().equals(codigo)) {
+                centinela = true;
+                break;
             }
         }
         return centinela;
     }
 }
-
